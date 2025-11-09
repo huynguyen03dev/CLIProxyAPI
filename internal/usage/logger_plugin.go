@@ -5,13 +5,16 @@ package usage
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	coreusage "github.com/router-for-me/CLIProxyAPI/v6/sdk/cliproxy/usage"
+	log "github.com/sirupsen/logrus"
 )
 
 var statisticsEnabled atomic.Bool
@@ -302,6 +305,85 @@ func resolveAPIIdentifier(ctx context.Context, record coreusage.Record) string {
 		return record.Provider
 	}
 	return "unknown"
+}
+
+// Load populates the statistics from a JSON file.
+func (s *RequestStatistics) Load(filePath string) error {
+	if s == nil {
+		return fmt.Errorf("RequestStatistics is nil")
+	}
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			log.Infof("Statistics file not found at %s, starting with empty statistics.", filePath)
+			return nil
+		}
+		return fmt.Errorf("failed to read statistics file: %w", err)
+	}
+
+	var snapshot StatisticsSnapshot
+	if err := json.Unmarshal(data, &snapshot); err != nil {
+		return fmt.Errorf("failed to unmarshal statistics file: %w", err)
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.totalRequests = snapshot.TotalRequests
+	s.successCount = snapshot.SuccessCount
+	s.failureCount = snapshot.FailureCount
+	s.totalTokens = snapshot.TotalTokens
+
+	s.apis = make(map[string]*apiStats, len(snapshot.APIs))
+	for apiName, apiSnapshot := range snapshot.APIs {
+		stats := &apiStats{
+			TotalRequests: apiSnapshot.TotalRequests,
+			TotalTokens:   apiSnapshot.TotalTokens,
+			Models:        make(map[string]*modelStats, len(apiSnapshot.Models)),
+		}
+		for modelName, modelSnapshot := range apiSnapshot.Models {
+			stats.Models[modelName] = &modelStats{
+				TotalRequests: modelSnapshot.TotalRequests,
+				TotalTokens:   modelSnapshot.TotalTokens,
+				Details:       append([]RequestDetail(nil), modelSnapshot.Details...),
+			}
+		}
+		s.apis[apiName] = stats
+	}
+
+	s.requestsByDay = snapshot.RequestsByDay
+	s.tokensByDay = snapshot.TokensByDay
+
+	s.requestsByHour = make(map[int]int64)
+	for hourStr, count := range snapshot.RequestsByHour {
+		var hour int
+		fmt.Sscanf(hourStr, "%02d", &hour)
+		s.requestsByHour[hour] = count
+	}
+
+	s.tokensByHour = make(map[int]int64)
+	for hourStr, count := range snapshot.TokensByHour {
+		var hour int
+		fmt.Sscanf(hourStr, "%02d", &hour)
+		s.tokensByHour[hour] = count
+	}
+
+	return nil
+}
+
+// Save persists the current statistics to a JSON file.
+func (s *RequestStatistics) Save(filePath string) error {
+	if s == nil {
+		return fmt.Errorf("RequestStatistics is nil")
+	}
+	snapshot := s.Snapshot()
+	data, err := json.MarshalIndent(snapshot, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal statistics: %w", err)
+	}
+
+	return os.WriteFile(filePath, data, 0644)
 }
 
 func resolveSuccess(ctx context.Context) bool {

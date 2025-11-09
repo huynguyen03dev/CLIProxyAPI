@@ -378,6 +378,13 @@ func main() {
 		}
 	}
 	usage.SetStatisticsEnabled(cfg.UsageStatisticsEnabled)
+	if cfg.UsageStatisticsEnabled && cfg.StatisticsFile != "" {
+		if err := usage.GetRequestStatistics().Load(cfg.StatisticsFile); err != nil {
+			log.WithError(err).Errorf("Failed to load usage statistics from %s", cfg.StatisticsFile)
+		} else {
+			log.Infof("Usage statistics loaded from %s", cfg.StatisticsFile)
+		}
+	}
 	coreauth.SetQuotaCooldownDisabled(cfg.DisableCooling)
 
 	if err = logging.ConfigureLogOutput(cfg.LoggingToFile); err != nil {
@@ -440,5 +447,15 @@ func main() {
 		// Start the main proxy service
 		managementasset.StartAutoUpdater(context.Background(), configFilePath)
 		cmd.StartService(cfg, configFilePath, password)
+
+		// This block executes after the service has shut down.
+		log.Info("Server shut down gracefully.")
+		if cfg.UsageStatisticsEnabled && cfg.StatisticsFile != "" {
+			if err := usage.GetRequestStatistics().Save(cfg.StatisticsFile); err != nil {
+				log.WithError(err).Errorf("Failed to save usage statistics to %s", cfg.StatisticsFile)
+			} else {
+				log.Infof("Usage statistics saved to %s", cfg.StatisticsFile)
+			}
+		}
 	}
 }

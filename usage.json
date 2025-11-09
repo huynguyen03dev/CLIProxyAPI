@@ -1,0 +1,170 @@
+{
+  "total_requests": 11,
+  "success_count": 11,
+  "failure_count": 0,
+  "total_tokens": 777181,
+  "apis": {
+    "POST /v1/chat/completions": {
+      "total_requests": 11,
+      "total_tokens": 777181,
+      "models": {
+        "gemini-2.5-pro": {
+          "total_requests": 9,
+          "total_tokens": 743727,
+          "details": [
+            {
+              "timestamp": "2025-11-09T17:33:50.574684386+07:00",
+              "source": "2101...-b7)",
+              "tokens": {
+                "input_tokens": 82878,
+                "output_tokens": 198,
+                "reasoning_tokens": 273,
+                "cached_tokens": 0,
+                "total_tokens": 83349
+              },
+              "failed": false
+            },
+            {
+              "timestamp": "2025-11-09T17:33:59.060618544+07:00",
+              "source": "adc0...611)",
+              "tokens": {
+                "input_tokens": 84495,
+                "output_tokens": 447,
+                "reasoning_tokens": 1799,
+                "cached_tokens": 0,
+                "total_tokens": 86741
+              },
+              "failed": false
+            },
+            {
+              "timestamp": "2025-11-09T17:34:25.67342073+07:00",
+              "source": "haru...-r7)",
+              "tokens": {
+                "input_tokens": 85354,
+                "output_tokens": 76,
+                "reasoning_tokens": 0,
+                "cached_tokens": 0,
+                "total_tokens": 85430
+              },
+              "failed": false
+            },
+            {
+              "timestamp": "2025-11-09T17:34:30.095930344+07:00",
+              "source": "haze...-h0)",
+              "tokens": {
+                "input_tokens": 85892,
+                "output_tokens": 102,
+                "reasoning_tokens": 128,
+                "cached_tokens": 0,
+                "total_tokens": 86122
+              },
+              "failed": false
+            },
+            {
+              "timestamp": "2025-11-09T17:34:35.376087824+07:00",
+              "source": "haze...-f1)",
+              "tokens": {
+                "input_tokens": 93720,
+                "output_tokens": 393,
+                "reasoning_tokens": 348,
+                "cached_tokens": 0,
+                "total_tokens": 94461
+              },
+              "failed": false
+            },
+            {
+              "timestamp": "2025-11-09T17:34:47.110112909+07:00",
+              "source": "haze...-g5)",
+              "tokens": {
+                "input_tokens": 94687,
+                "output_tokens": 131,
+                "reasoning_tokens": 0,
+                "cached_tokens": 0,
+                "total_tokens": 94818
+              },
+              "failed": false
+            },
+            {
+              "timestamp": "2025-11-09T17:34:51.277637259+07:00",
+              "source": "haze...-v5)",
+              "tokens": {
+                "input_tokens": 95229,
+                "output_tokens": 154,
+                "reasoning_tokens": 0,
+                "cached_tokens": 0,
+                "total_tokens": 95383
+              },
+              "failed": false
+            },
+            {
+              "timestamp": "2025-11-09T17:36:15.183917363+07:00",
+              "source": "huy0...-c4)",
+              "tokens": {
+                "input_tokens": 93738,
+                "output_tokens": 310,
+                "reasoning_tokens": 520,
+                "cached_tokens": 0,
+                "total_tokens": 94568
+              },
+              "failed": false
+            },
+            {
+              "timestamp": "2025-11-09T17:36:54.418227959+07:00",
+              "source": "2101...-b7)",
+              "tokens": {
+                "input_tokens": 21566,
+                "output_tokens": 647,
+                "reasoning_tokens": 642,
+                "cached_tokens": 0,
+                "total_tokens": 22855
+              },
+              "failed": false
+            }
+          ]
+        },
+        "qwen3-coder-plus": {
+          "total_requests": 2,
+          "total_tokens": 33454,
+          "details": [
+            {
+              "timestamp": "2025-11-09T17:32:00.547890974+07:00",
+              "source": "haze....com",
+              "tokens": {
+                "input_tokens": 16321,
+                "output_tokens": 94,
+                "reasoning_tokens": 0,
+                "cached_tokens": 13568,
+                "total_tokens": 16415
+              },
+              "failed": false
+            },
+            {
+              "timestamp": "2025-11-09T17:32:04.223238602+07:00",
+              "source": "huy0....com",
+              "tokens": {
+                "input_tokens": 16899,
+                "output_tokens": 140,
+                "reasoning_tokens": 0,
+                "cached_tokens": 16256,
+                "total_tokens": 17039
+              },
+              "failed": false
+            }
+          ]
+        }
+      }
+    }
+  },
+  "requests_by_day": {
+    "2025-11-09": 11
+  },
+  "requests_by_hour": {
+    "17": 11
+  },
+  "tokens_by_day": {
+    "2025-11-09": 777181
+  },
+  "tokens_by_hour": {
+    "17": 777181
+  }
+}
