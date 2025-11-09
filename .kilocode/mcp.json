@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "language-server": {
+      "command": "mcp-language-server",
+      "args": [
+        "--workspace",
+        "/home/hazeruno/IT/pulls/CLIProxyAPI",
+        "--lsp",
+        "gopls"
+      ],
+      "env": {
+        "PATH": "/home/hazeruno/go/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/home/hazeruno/.bun/bin:/home/hazeruno/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin",
+        "GOPATH": "/home/hazeruno/go",
+        "GOCACHE": "/home/hazeruno/.cache/go-build",
+        "GOMODCACHE": "/home/hazeruno/go/pkg/mod"
+      },
+      "alwaysAllow": [
+        "definition",
+        "diagnostics",
+        "edit_file",
+        "references",
+        "hover",
+        "rename_symbol"
+      ]
+    }
+  }
+}
