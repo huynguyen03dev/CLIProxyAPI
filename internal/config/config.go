@@ -35,7 +35,7 @@ type Config struct {
 	UsageStatisticsEnabled bool `yaml:"usage-statistics-enabled" json:"usage-statistics-enabled"`
 
 	// StatisticsFile is the path to the file where usage statistics are persisted.
-	StatisticsFile string `yaml:"statistics_file" json:"-"`
+	StatisticsFile string `yaml:"statistics-file" json:"-"`
 
 	// DisableCooling disables quota cooldown scheduling when true.
 	DisableCooling bool `yaml:"disable-cooling" json:"disable-cooling"`
