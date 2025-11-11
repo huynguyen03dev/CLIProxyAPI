@@ -6,6 +6,8 @@ This document outlines the rules and guidelines for using the `gopls` language s
 
 The `language-server` MCP provides access to powerful language-specific features directly from the Go language server (`gopls`). This allows for deep code intelligence, making it easier to navigate and manipulate Go projects.
 
+**IMPORTANT**: All LSP tools must be called using the `use_mcp_tool` function with the proper parameters. Do not call LSP tools directly.
+
 ## Available Tools
 
 The following tools are available through the `language-server` MCP. Always use these tools when performing tasks on Go code to ensure accuracy and efficiency.
@@ -13,31 +15,112 @@ The following tools are available through the `language-server` MCP. Always use 
 ### `definition`
 - **Purpose**: To find where a symbol (like a function, type, or variable) is defined.
 - **When to use**: Use this when you need to understand the implementation of a specific piece of code. Instead of manually searching for a function's source, you can directly jump to its definition.
-- **Example**: If you encounter a function call `util.MyFunction()`, you can use `definition` with `symbolName: "util.MyFunction"` to get the source code of that function.
+- **Usage**:
+```xml
+<use_mcp_tool>
+<server_name>language-server</server_name>
+<tool_name>definition</tool_name>
+<arguments>
+{
+  "symbolName": "util.MyFunction"
+}
+</arguments>
+</use_mcp_tool>
+```
 
 ### `references`
 - **Purpose**: To find all places where a symbol is used.
 - **When to use**: This is crucial for impact analysis. Before renaming or modifying a function or variable, use `references` to see where it's used throughout the codebase. This helps prevent breaking changes.
-- **Example**: To find all usages of `MyType`, use `references` with `symbolName: "mypackage.MyType"`.
+- **Usage**:
+```xml
+<use_mcp_tool>
+<server_name>language-server</server_name>
+<tool_name>references</tool_name>
+<arguments>
+{
+  "symbolName": "mypackage.MyType"
+}
+</arguments>
+</use_mcp_tool>
+```
 
 ### `diagnostics`
 - **Purpose**: To get a list of errors and warnings for a specific file.
 - **When to use**: After modifying a file, run `diagnostics` to check for any syntax errors, compilation issues, or linter warnings. This ensures code quality and correctness before you finalize your changes.
-- **Example**: After editing `main.go`, use `diagnostics` with `filePath: "cmd/server/main.go"` to validate it.
+- **Usage**:
+```xml
+<use_mcp_tool>
+<server_name>language-server</server_name>
+<tool_name>diagnostics</tool_name>
+<arguments>
+{
+  "filePath": "cmd/server/main.go",
+  "showLineNumbers": true,
+  "contextLines": false
+}
+</arguments>
+</use_mcp_tool>
+```
 
 ### `hover`
 - **Purpose**: To get quick information about a symbol, such as its type and documentation.
 - **When to use**: When you quickly need to know what a variable's type is or what a function does without navigating away from your current context.
-- **Example**: If you see a variable `myVar` on line 10, column 5 of `main.go`, use `hover` with `filePath: "cmd/server/main.go"`, `line: 10`, `column: 5` to get its details.
+- **Usage**:
+```xml
+<use_mcp_tool>
+<server_name>language-server</server_name>
+<tool_name>hover</tool_name>
+<arguments>
+{
+  "filePath": "cmd/server/main.go",
+  "line": 10,
+  "column": 5
+}
+</arguments>
+</use_mcp_tool>
+```
 
 ### `rename_symbol`
 - **Purpose**: To safely rename a symbol across the entire project.
 - **When to use**: When you need to change the name of a function, variable, or type. This tool handles updating all references automatically, which is much safer than a manual find-and-replace.
-- **Example**: To rename `OldFunctionName` to `NewFunctionName` in `main.go` at line 25, column 12, use `rename_symbol` with the file path, line, column, and `newName: "NewFunctionName"`.
+- **Usage**:
+```xml
+<use_mcp_tool>
+<server_name>language-server</server_name>
+<tool_name>rename_symbol</tool_name>
+<arguments>
+{
+  "filePath": "cmd/server/main.go",
+  "line": 25,
+  "column": 12,
+  "newName": "NewFunctionName"
+}
+</arguments>
+</use_mcp_tool>
+```
 
 ### `edit_file`
 - **Purpose**: To apply programmatic text edits to a file.
 - **When to use**: This is a powerful tool for complex, multi-location changes within a single file that can be determined programmatically. It is often used for refactoring tasks identified by the language server. For simple search-and-replace, `apply_diff` might be easier.
+- **Usage**:
+```xml
+<use_mcp_tool>
+<server_name>language-server</server_name>
+<tool_name>edit_file</tool_name>
+<arguments>
+{
+  "filePath": "cmd/server/main.go",
+  "edits": [
+    {
+      "startLine": 1,
+      "endLine": 5,
+      "newText": "new content"
+    }
+  ]
+}
+</arguments>
+</use_mcp_tool>
+```
 
 ## Core Principle: LSP First
 
@@ -52,3 +135,4 @@ When working with Go code, you **must** prioritize using the `language-server` t
 - **Validate changes**: After any modification, run `diagnostics` on the affected files to ensure you haven't introduced any errors.
 - **Understand the context**: Use `definition` and `hover` to build a strong understanding of the code before you make changes.
 - **Assess impact**: Use `references` to understand the potential impact of a change before you implement it.
+- **Correct MCP Usage**: Always use the `use_mcp_tool` function with `server_name: "language-server"` and the appropriate `tool_name` and `arguments` parameters as shown in the examples above.
