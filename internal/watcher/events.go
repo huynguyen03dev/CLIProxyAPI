@@ -27,6 +27,11 @@ func matchProvider(provider string, targets []string) (string, bool) {
 }
 
 func (w *Watcher) start(ctx context.Context) error {
+	if w.watcher == nil {
+		log.Warn("file watcher disabled (no fsnotify); config/auth hot reload disabled")
+		w.reloadClients(true, nil, false)
+		return nil
+	}
 	if errAddConfig := w.watcher.Add(w.configPath); errAddConfig != nil {
 		log.Errorf("failed to watch config file %s: %v", w.configPath, errAddConfig)
 		return errAddConfig
@@ -46,6 +51,10 @@ func (w *Watcher) start(ctx context.Context) error {
 }
 
 func (w *Watcher) processEvents(ctx context.Context) {
+	if w.watcher == nil {
+		<-ctx.Done()
+		return
+	}
 	for {
 		select {
 		case <-ctx.Done():

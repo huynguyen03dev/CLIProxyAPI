@@ -93,7 +93,19 @@ const (
 func NewWatcher(configPath, authDir string, reloadCallback func(*config.Config)) (*Watcher, error) {
 	watcher, errNewWatcher := fsnotify.NewWatcher()
 	if errNewWatcher != nil {
-		return nil, errNewWatcher
+		// Host is out of inotify instances (Render free tier shared hosts hit
+		// max_user_instances). Do not crash the whole service: continue without
+		// fsnotify (config/auth still load; hot reload is degraded to polling
+		// via gitstore/management endpoints).
+		log.Warnf("fsnotify unavailable (%v); running without file watcher", errNewWatcher)
+		wNil := &Watcher{
+			configPath:     configPath,
+			authDir:        authDir,
+			reloadCallback: reloadCallback,
+			watcher:        nil,
+		}
+		wNil.dispatchCond = sync.NewCond(&wNil.dispatchMu)
+		return wNil, nil
 	}
 	w := &Watcher{
 		configPath:      configPath,
@@ -130,6 +142,9 @@ func (w *Watcher) Stop() error {
 	w.stopDispatch()
 	w.stopConfigReloadTimer()
 	w.stopServerUpdateTimer()
+	if w.watcher == nil {
+		return nil
+	}
 	return w.watcher.Close()
 }
 
